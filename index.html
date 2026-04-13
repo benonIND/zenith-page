@@ -3,7 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>ZENITH-X | Intelligence Dashboard</title>
+
+    <meta property="og:title" content="ZENITH-X Intelligence Dashboard">
+    <meta property="og:description" content="Autonomous Intelligence System - Monitoring Tren Internet & Memory Database secara Real-time.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/benonIND/zenith-dashboard/main/logo-zenith.jpg"> <meta property="og:url" content="https://benonind.github.io/zenith-dashboard/">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#3b82f6">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ZENITH-X | Intel Dashboard">
+    <meta name="twitter:description" content="Monitoring Autonomous AI Intelligence Feed.">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -48,14 +60,12 @@
                     </h2>
                     <button onclick="fetchData()" class="text-xs hover:text-blue-400 transition">REFRESH</button>
                 </div>
-                <div id="feed" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    </div>
+                <div id="feed" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // GANTI ID GIST KAMU DI SINI
         const GIST_ID = 'a13ebe972a480564350215b37871a226'; 
 
         async function fetchData() {
@@ -71,13 +81,11 @@
 
         function render(memory) {
             const container = document.getElementById('feed');
-            const items = Object.values(memory).reverse(); // Terbaru di atas
+            const items = Object.values(memory).reverse();
             
-            // Update Stats
             document.getElementById('total-intel').innerText = items.length;
             if(items[0]) document.getElementById('last-update').innerText = items[0].metadata?.created_at || 'Today';
 
-            // Render List
             container.innerHTML = items.slice(0, 12).map(item => `
                 <div class="glass p-5 rounded-xl border-l-2 border-blue-600 hover:glow-blue transition-all duration-300">
                     <div class="flex justify-between items-start mb-3">
@@ -98,7 +106,6 @@
         }
 
         fetchData();
-        // Refresh otomatis tiap 5 menit
         setInterval(fetchData, 300000);
     </script>
 </body>
