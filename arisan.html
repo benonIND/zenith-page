@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBI-Arisan System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        nav {
+            background: var(--card-bg);
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .nav-logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); letter-spacing: -0.5px; }
+        .dev-tag { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .dev-tag span { color: var(--primary); }
+
+        /* Password Overlay */
+        #auth-screen {
+            position: fixed; inset: 0;
+            background: var(--bg-body);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 999;
+        }
+
+        .login-box {
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            width: 100%; max-width: 360px; text-align: center;
+        }
+
+        /* Main Content */
+        .main-wrapper { display: none; padding: 40px 20px; max-width: 1000px; margin: 0 auto; }
+        .container { display: grid; gap: 24px; grid-template-columns: 1fr 1.5fr; }
+
+        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } }
+
+        .card { background: var(--card-bg); border-radius: 24px; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+        h2 { margin-top: 0; font-size: 1rem; font-weight: 700; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; }
+
+        textarea { width: 100%; height: 250px; border: 1px solid #e2e8f0; border-radius: 16px; padding: 15px; font-family: inherit; resize: none; background: #fdfdfd; box-sizing: border-box; }
+        .btn { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 14px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+
+        /* Animation System */
+        .winner-display-container {
+            position: relative; height: 120px; width: 100%; margin: 20px 0;
+            display: flex; justify-content: center; align-items: center; overflow: hidden;
+            background: #f1f5f9; border-radius: 16px;
+        }
+
+        #winner-name { font-size: 3rem; font-weight: 800; color: var(--primary); transition: 0.15s var(--ease-out-expo); }
+        
+        /* Animasi gerakan */
+        .slide-up { transform: translateY(-100px); opacity: 0; }
+        .slide-down { transform: translateY(100px); opacity: 0; }
+
+        .history-item { background: #f8fafc; padding: 12px 16px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; border: 1px solid #f1f5f9; }
+        .badge { background: #e0e7ff; color: var(--primary); padding: 2px 8px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; }
+
+        footer { text-align: center; padding: 40px; color: var(--text-muted); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <div class="login-box">
+            <div style="font-size: 2rem; margin-bottom: 10px;">🛡️</div>
+            <h2>Control Access</h2>
+            <input type="password" id="pass" style="width:100%; padding:12px; margin:15px 0; border-radius:12px; border:1px solid #ddd; text-align:center;" placeholder="Password">
+            <button class="btn" onclick="auth()">Authorize</button>
+        </div>
+    </div>
+
+    <nav id="navbar" style="display: none;">
+        <div class="nav-logo">GBI-ARISAN</div>
+        <div class="dev-tag">Developed by <span>yorima_</span></div>
+    </nav>
+
+    <div class="main-wrapper" id="main-app">
+        <div class="container">
+            <div class="card">
+                <h2>Database Peserta</h2>
+                <textarea id="list-input" placeholder="Masukkan satu nama per baris..."></textarea>
+                <button class="btn" style="background: #ef4444; margin-top: 20px; font-size: 0.8rem;" onclick="reset()">Riset Data</button>
+            </div>
+
+            <div class="card" style="text-align: center;">
+                <h2>Draw Engine</h2>
+                <div class="winner-display-container">
+                    <div id="winner-name">READY</div>
+                </div>
+                <button class="btn" id="btn-kocok" onclick="startDraw()" style="max-width: 280px;">Execute Selection</button>
+
+                <div style="text-align: left; margin-top: 30px;">
+                    <h2>Selection History</h2>
+                    <div id="history-content"></div>
+                </div>
+            </div>
+        </div>
+        <footer>&copy; 2026 GBI Arisan system | Dev: yorima_</footer>
+    </div>
+
+    <script>
+        const PASS = "admin";
+        let historyArr = JSON.parse(localStorage.getItem('nexus_history')) || [];
+
+        window.onload = () => {
+            document.getElementById('list-input').value = localStorage.getItem('nexus_names') || "";
+            updateHistoryUI();
+        }
+
+        function auth() {
+            if(document.getElementById('pass').value === PASS) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('navbar').style.display = 'flex';
+                document.getElementById('main-app').style.display = 'block';
+            } else { alert("Access Denied!"); }
+        }
+
+        function startDraw() {
+            const input = document.getElementById('list-input').value;
+            localStorage.setItem('nexus_names', input);
+            
+            const pool = input.split('\n').map(n => n.trim()).filter(n => n !== "" && !historyArr.includes(n));
+
+            if (pool.length === 0) return alert("Semua peserta sudah menang atau list kosong!");
+
+            const btn = document.getElementById('btn-kocok');
+            const display = document.getElementById('winner-name');
+            btn.disabled = true;
+
+            let counter = 0;
+            let speed = 80;
+            
+            // Animasi Pengacakan
+            const interval = setInterval(() => {
+                display.classList.add('slide-up');
+                
+                setTimeout(() => {
+                    display.innerText = pool[Math.floor(Math.random() * pool.length)];
+                    display.classList.remove('slide-up');
+                    display.classList.add('slide-down');
+                    
+                    setTimeout(() => {
+                        display.classList.remove('slide-down');
+                    }, 20);
+                }, 50);
+
+                counter++;
+                if (counter > 25) {
+                    clearInterval(interval);
+                    finalize(pool);
+                }
+            }, 100);
+        }
+
+        function finalize(pool) {
+            const display = document.getElementById('winner-name');
+            const btn = document.getElementById('btn-kocok');
+            
+            // Pilih pemenang final secara mutlak
+            const finalWinner = pool[Math.floor(Math.random() * pool.length)];
+            
+            // Tampilkan hasil final
+            setTimeout(() => {
+                display.innerText = finalWinner;
+                display.style.transform = "scale(1.2)";
+                display.style.color = "#4f46e5";
+                
+                // Masukkan ke history HANYA SETELAH terpilih final
+                historyArr.push(finalWinner);
+                localStorage.setItem('nexus_history', JSON.stringify(historyArr));
+                
+                updateHistoryUI();
+                
+                setTimeout(() => {
+                    display.style.transform = "scale(1)";
+                    btn.disabled = false;
+                }, 500);
+            }, 200);
+        }
+
+        function updateHistoryUI() {
+            const container = document.getElementById('history-content');
+            if (historyArr.length === 0) {
+                container.innerHTML = '<p style="color:#94a3b8">No history recorded.</p>';
+                return;
+            }
+            // Render ulang dari array history yang valid
+            container.innerHTML = historyArr.map((name, i) => `
+                <div class="history-item">
+                    <span>${name}</span>
+                    <span class="badge">Session #${i+1}</span>
+                </div>
+            `).reverse().join('');
+        }
+
+        function reset() {
+            if(confirm("Hapus semua data?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
